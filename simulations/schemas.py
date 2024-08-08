@@ -7,3 +7,6 @@ class Simulation(BaseModel):
 
     class Config:
         orm_mode = True
+
+class SimulationCreate(BaseModel):
+    title : str

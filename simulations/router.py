@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import update
+from sqlalchemy import text, update
 
 from . import models
 from . import schemas
@@ -16,7 +16,7 @@ from ..database import Sessionlocal, get_db
 router = APIRouter(prefix="/simulations", tags=["simulations"])
 
 @router.post("/", response_model = schemas.Simulation)
-def add_simulation(simulation: models.Simulation_default, token: Annotated[str, Depends(oauth2_scheme)],
+def add_simulation(simulation: schemas.SimulationCreate, token: Annotated[str, Depends(oauth2_scheme)],
                    db: Session = Depends(get_db), 
                    ):
     token_data = autorise(token=token)
@@ -24,13 +24,16 @@ def add_simulation(simulation: models.Simulation_default, token: Annotated[str, 
     if db_user is None:
         raise credentials_exception
     if db_user.availible_simulations > 0:
-        db_sim = models.Simulation_default(title=simulation.title, owner_id=db_user.id)
+        db_sim = models.Simulation(title=simulation.title, owner_id=db_user.id)
         db.add(db_sim)
         db_user.availible_simulations = db_user.availible_simulations - 1
-        res = db.execute("select * from simulations")
+        db.commit()
+        return db_sim
+        # res = db.execute(text("select * from simulations"))
+        return db_sim
         db.commit
         db.refresh(db_sim)
-        return db_sim
+        
         
 
 

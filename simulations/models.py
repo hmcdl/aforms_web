@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from ..database import Base
 # from ..users.models import User
 
-class Simulation_default(Base):
+class Simulation(Base):
     __tablename__ = "simulations"
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
