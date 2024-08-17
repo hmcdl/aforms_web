@@ -1,3 +1,7 @@
+"""
+Основной модуль приожения AFORMES_WEB, позволяющего осуществлять 
+многодисциплинарные расчеты самолетов
+"""
 import uvicorn
 from fastapi import FastAPI
 from app.database import engine, Base
