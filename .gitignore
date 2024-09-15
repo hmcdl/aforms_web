@@ -1,6 +1,6 @@
 __pycache__
 secret_data.py
-./drafts
+./drafts/__pycache__
 ./simulations
 drafts
 simulations
