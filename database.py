@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.secret_data import DATABASE_PASSWORD
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://postgres:{DATABASE_PASSWORD}@localhost:5432/test_db"
+SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://postgres:{DATABASE_PASSWORD}@localhost:5432/simulations_db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

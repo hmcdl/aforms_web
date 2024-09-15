@@ -12,7 +12,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     """
-    Модель возврата при создании нового юзера
+    Модель для запроса при создании нового юзера
     """
     password: str
 

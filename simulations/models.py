@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship, mapped_column
 
 from ..database import Base
 # from ..users.models import User
-
 class Simulation(Base):
     __tablename__ = "simulations"
     id = mapped_column(Integer, primary_key=True)
@@ -13,5 +12,4 @@ class Simulation(Base):
     created = Column(DateTime, nullable=False)
     conver_args = Column(String, nullable=False)
 
-    
     owner = relationship("User", back_populates="simulations")

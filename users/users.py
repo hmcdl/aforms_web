@@ -18,7 +18,6 @@ from app.secret_data import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from . import models as db_models
 from .schemas import User, UserCreate
 
-
 router = APIRouter(prefix="/users", tags=["users"])
 empty_router = APIRouter()
 
@@ -36,16 +35,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 from fastapi.security.utils import get_authorization_scheme_param
 
-class oauth_wrapper(OAuth2PasswordBearer):
-    def __init__(self, tokenUrl : str):
-        super().__init__(tokenUrl=tokenUrl)
-    async def __call__(self, request: Request):
-        if request.client.host == "127.0.0.1":
-            return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJleHAiOjE3MjQ2MDI0ODF9.s1z58kfnwy45a3i5gqK7rF9la4XaTNNCiNWGmWqV-DE"
-        interm_res = await super().__call__(request=request)
-        return interm_res
+# class oauth_wrapper(OAuth2PasswordBearer):
+#     def __init__(self, tokenUrl : str):
+#         super().__init__(tokenUrl=tokenUrl)
+#     async def __call__(self, request: Request):
+#         # if request.client.host == "127.0.0.1":
+#         #     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJleHAiOjE4ODIzNzQwNTB9.SwYxMlf9314g0JxhM6Fi64_UtdeD0YkgzykqwLAcmaE"
+#         interm_res = await super().__call__(request=request)
+#         return interm_res
 
-wrapped_scheme = oauth_wrapper(tokenUrl="token")
+# wrapped_scheme = oauth_wrapper(tokenUrl="token")
 
 class Token(BaseModel):
     """
@@ -137,7 +136,7 @@ def get_user_by_email(db: Session, email : int):
 
 
 @router.get("/me", response_model= User)
-def get_user_me(token: Annotated[str, Depends(wrapped_scheme)],
+def get_user_me(token: Annotated[str, Depends(oauth2_scheme)],
                  db: Session = Depends(get_db)):
     """
     Функция, возвращающая данные о пользователе, определенные в модели User
@@ -169,13 +168,15 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 @empty_router.post("/token")
-async def login_for_access_token(
+async def login_for_access_token( req : Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
      db: Session = Depends(get_db)
 ) -> Token:
     """
     Функция, возвращающая токен после авторизации
     """
+    r= req
+    print (r.__repr__)
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -184,9 +185,9 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    if user.username == "admin":
+    if user.username == "tester":
         access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=60*24*365*5
+        data={"sub": user.username}, expires_delta=timedelta(minutes=60*24*365*5)
     ) 
     else:
         access_token = create_access_token(
