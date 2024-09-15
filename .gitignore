@@ -1,5 +1,4 @@
-__pycache__
-secret_data.py
-./drafts/__pycache__
-./simulations
-simulations
+./app/__pycache__
+./app/secret_data.py
+./app/drafts/__pycache__
+venv
