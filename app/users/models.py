@@ -16,7 +16,7 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False, nullable=False)
-    availible_simulations = Column(Integer, default=5, nullable=False)
+    availible_simulations = Column(Integer, default=100000, nullable=False)
 
     simulations = relationship("Simulation", back_populates="owner")
     

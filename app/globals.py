@@ -2,7 +2,6 @@
 Файл с глобальными параметрами
 """
 sim_dir = "c:/Work/Dev/sim_dir"
-simulation_executor = "C:/Work/Dev/simulations_web/app/simulations/simulations_mock.py"
 
 deps = {
     "console_path": "c:/Production/Console.exe",
