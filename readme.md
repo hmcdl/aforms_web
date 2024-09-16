@@ -1,19 +1,8 @@
-# AFORMES Web
+# AFORMS Web
 
 # A-FORMS Optimizer
 
 A-FORMS Optimizer - это набор модулей для оптимизации формы авиационных панелей под заданные нагрузки.
-
-**Table of Contents**
-
-- [Используемые технологии](#techs)
-- [Установка](#installation)
-- [Использование](#usage)
-- [Спецификация файла panels_description](#panels_description)
-- [Спецификация файла global_optimization_parameters](#global_optimization_parameters)
-
-## techs 
-
 
 
 ## Установка и развертывание
