@@ -77,7 +77,7 @@ def add_simulation(token: Annotated[str, Depends(oauth2_scheme)],
         raise HTTPException(status_code=500, detail=f"Fail while writing to file")
     
     try:
-        db_sim = models.Simulation(title=title, owner_id=-1,
+        db_sim = models.Simulation(title=title, owner_id=db_user.id,
                                status="not_calculated", created=datetime.now(),
                                conver_args="not set")
         db.add(db_sim)
