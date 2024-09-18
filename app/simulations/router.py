@@ -107,17 +107,6 @@ def remove_sim(title: str, token: Annotated[str, Depends(oauth2_scheme)],
         rmtree(path.join(sim_dir, relational_working_dir))
     return {"status_code": 200, "detail": f"title {title} successfully removed"}
 
-@router.post("/foo")
-def bar(
-    mdl: UploadFile,
-         k: Annotated[str, Form()], d: Annotated[str, Form()],
-           req : Request,token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db),  
-        ):
-    r = req
-    print(k, d)
-    contents = mdl.file.read()
-    print(contents)
-    return {"status": 200}
 
 @router.get("/show_my_sims", response_model=List[schemas.Simulation])
 def show_my_sims(token: Annotated[str, Depends(oauth2_scheme)], 
@@ -165,14 +154,6 @@ def start_simulation(request : Request,
         db.query(models.Simulation).filter(models.Simulation.owner_id==db_user.id,
                                                 models.Simulation.title==title).first().status = "calculated"
         db.commit()
-        return {"status_code": 200, "detail": "simulation finished successfully"}
-    else:
-        return {"status_code": 400, "detail": f"simulation finished with returncode {returncode}"}
-
-@router.post("/run_mock")
-def popen_test(arg: int):
-    returncode = run_aformes.run_mock(arg)
-    if returncode == 0:
         return {"status_code": 200, "detail": "simulation finished successfully"}
     else:
         return {"status_code": 400, "detail": f"simulation finished with returncode {returncode}"}

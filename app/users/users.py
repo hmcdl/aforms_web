@@ -195,8 +195,3 @@ async def login_for_access_token( req : Request,
     )
     return Token(access_token=access_token, token_type="bearer")
 
-
-@empty_router.get("/test/")
-def read_root(request: Request):
-    client_host = request.client.host
-    return {"client_host": client_host}
