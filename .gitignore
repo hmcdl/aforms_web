@@ -4,3 +4,4 @@ app/drafts/__pycache__
 .venv/
 app/users/__pycache__/
 app/simulations/__pycache__/
+.env

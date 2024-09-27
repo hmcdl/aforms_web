@@ -1,3 +1,7 @@
+"""
+альтернатива run_aformes.py для запуска затычки расчета
+!!!Сейчас не работает
+"""
 import os
 import sys
 import subprocess

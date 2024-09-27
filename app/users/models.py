@@ -1,8 +1,10 @@
+"""
+Классовое представление пользователя из базы данных
+"""
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm import relationship, mapped_column
 
 from app.database import Base
-from ..simulations.models import Simulation
 
 class User(Base):
     """

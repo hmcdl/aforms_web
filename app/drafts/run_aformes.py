@@ -20,7 +20,7 @@ def run_aformes(args_map: dict, cwd: str) -> int:
     print(sp.returncode)
     # print(all_args)
 
-run_aformes({"--simulation": 0, "--iters": 0}, cwd="c:/Work/Dev/simulations_web/sim_dir/tester/LMS19")
+# run_aformes({"--simulation": 0, "--iters": 0}, cwd="c:/Work/Dev/simulations_web/sim_dir/tester/LMS19")
 
 
 
