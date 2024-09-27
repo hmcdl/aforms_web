@@ -1,8 +1,11 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+"""
+Классовое представление проекта из таблицы simulations
+"""
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship, mapped_column
 
 from ..database import Base
-# from ..users.models import User
+
 class Simulation(Base):
     __tablename__ = "simulations"
     id = mapped_column(Integer, primary_key=True)

@@ -7,11 +7,7 @@ from fastapi import FastAPI
 from app.database import engine, Base
 
 from app.users.router import router, empty_router
-from app.simulations.router import router as sim_router 
-# import app.security.security
-
-
-
+from app.simulations.router import router as sim_router
 
 Base.metadata.create_all(bind=engine)
 

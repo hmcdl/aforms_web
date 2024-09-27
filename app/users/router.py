@@ -33,19 +33,6 @@ pwd_context= CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-from fastapi.security.utils import get_authorization_scheme_param
-
-# class oauth_wrapper(OAuth2PasswordBearer):
-#     def __init__(self, tokenUrl : str):
-#         super().__init__(tokenUrl=tokenUrl)
-#     async def __call__(self, request: Request):
-#         # if request.client.host == "127.0.0.1":
-#         #     return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJleHAiOjE4ODIzNzQwNTB9.SwYxMlf9314g0JxhM6Fi64_UtdeD0YkgzykqwLAcmaE"
-#         interm_res = await super().__call__(request=request)
-#         return interm_res
-
-# wrapped_scheme = oauth_wrapper(tokenUrl="token")
-
 class Token(BaseModel):
     """
     Класс для работы с токенами
@@ -85,7 +72,10 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def get_user_by_token(token : str, db: Session):
+def get_user_by_token(token : str, db: Session) ->db_models.User:
+    """
+    Получить юзера из базы данных по токену
+    """
     token_data = autorise(token=token)
     db_user = get_user_by_name(db, username=token_data.username)
     if db_user is None:
@@ -104,31 +94,31 @@ def autorise(token : str) -> Token:
         return TokenData(username=username)
     except InvalidTokenError:
         return 'Invalid token. Please log in again.'
-    
-def authenticate_user(fake_db, username: str, password: str):
+
+def authenticate_user(db: Session, username: str, password: str) -> db_models.User:
     """
     Аутентификация и авторизация юзера
     """
-    user = get_user_by_name(fake_db, username)
+    user = get_user_by_name(db=db, username=username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
         return False
     return user
 
-def get_user(db: Session, user_id : int):
+def get_user(db: Session, user_id : int) -> db_models.User:
     """
     Получить юзера по АйДи из БД
     """
     return db.query(db_models.User).filter(db_models.User.id == user_id).first()
 
-def get_user_by_name(db: Session, username : int):
+def get_user_by_name(db: Session, username : int) -> db_models.User:
     """
     Получить юзера по имени из БД
     """
     return db.query(db_models.User).filter(db_models.User.username == username).first()
 
-def get_user_by_email(db: Session, email : int):
+def get_user_by_email(db: Session, email : int) -> db_models.User:
     """
     Получить юзера по почте из БД
     """
@@ -137,7 +127,7 @@ def get_user_by_email(db: Session, email : int):
 
 @router.get("/me", response_model= User)
 def get_user_me(token: Annotated[str, Depends(oauth2_scheme)],
-                 db: Session = Depends(get_db)):
+                 db: Session = Depends(get_db)) -> User:
     """
     Функция, возвращающая данные о пользователе, определенные в модели User
     """
@@ -152,7 +142,7 @@ def get_user_me(token: Annotated[str, Depends(oauth2_scheme)],
 #     return get_user_by_token(token=token, db=db)
 
 @router.post("/", response_model=User)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+def create_user(user: UserCreate, db: Session = Depends(get_db)) -> User:
     """
     Функция, создающая нового пользователя по почте, нику и паролю
     """
@@ -194,4 +184,3 @@ async def login_for_access_token( req : Request,
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
-
