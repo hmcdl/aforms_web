@@ -138,17 +138,10 @@ def start_simulation(request : Request,
     conver_args["model"] =  path.join(abs_working_dir, title + ".mdl3").replace("/", "\\")
     run_aformes.prepare_mdl(path.join(abs_working_dir, title + ".mdl3"))
     log_file_path = path.join(abs_working_dir,"ConverLog00000.log")
-    with open(log_file_path, 'w') as f:
-        pass
-    # log_socket.transmit_log(host=request.client.host, port=60606,
-    #                          log_file_path=log_file_path)
-    
     log_socket_abs_path = os.path.abspath(os.path.join(Path(__file__).parent, "log_socket.py") )
     print(f"{log_socket_abs_path} {request.client.host} 60606 {log_file_path}")
-                    #  {request.client.host} 60606 {log_file_path}")
     subprocess.Popen(f'python {log_socket_abs_path} {request.client.host} 60606 {log_file_path}')
     returncode = run_aformes.run_aformes(args_map=conver_args, cwd=abs_working_dir)
-    # sp.wait()
     if returncode == 0:
         db.query(models.Simulation).filter(models.Simulation.owner_id==db_user.id,
                                                 models.Simulation.title==title).first().status = "calculated"

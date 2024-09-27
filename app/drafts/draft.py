@@ -3,7 +3,7 @@ import subprocess
 import sys
 sys.path.append(os.getcwd())
 print(sys.path)
-from app.globals import deps
+# from app.globals import deps
 # str = """
 # c:/Production/Console.exe --solver \"c:/Program Files/Siemens/FEMAPv1142/nastran/bin/nastran.exe\" --PythonPath \"c:/Users/Mikhail/AppData/Local/Programs/Python/Python310/python.exe\" --optimizer_path \"c:/Production/panel_optimizer\" --panelcm \"c:/Production/Buckling\" --materials \"c:/Production/Materials.txt\" --iters 1 --simulation 1 --aeroratio 1.5 --model \"c:/Work/Dev/simulations_web/sim_dir/tester/job8/job8.mdl3\"
 # """

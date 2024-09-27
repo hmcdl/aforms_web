@@ -10,7 +10,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")
 DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
 DATABASE_NAME = os.environ.get("DATABASE_NAME")
 DATABASE_PORT = os.environ.get("DATABASE_PORT")
-simulation_executor = os.environ.get("simulation_executor")
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URL")
 SIMULATIONS_DIR = os.environ.get("SIMULATIONS_DIR")
 
