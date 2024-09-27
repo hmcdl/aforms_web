@@ -2,10 +2,10 @@ import os
 import pathlib
 import subprocess
 
-from ..globals import deps
-# from ..drafts import simulation_mock
+from app.settings import (AFORMS_CONSOLE_PATH, NASTRAN_SOLVER_PATH,
+                          PYTHON_PATH, OPTIMIZATION_SOLVER_PATH,
+                          PANELCM, MATERIALS_DB)
 
-# from local_depends_data import deps
 
 def run_mock(arg) -> int:
     sp = subprocess.Popen(['python', "./app/drafts/simulation_mock.py"])
@@ -17,12 +17,12 @@ def run_aformes(args_map: dict, cwd: str) -> int:
     for key in args_map:
         optional_arguments_list.append("--" + key)
         optional_arguments_list.append(str(args_map[key]))
-    full_args_list = [deps["console_path"],
-                   "--solver", deps["solver"],
-                   "--PythonPath", deps["PythonPath"],
-                   "--optimizer_path", deps["optimizer_path"],
-                   "--panelcm", deps["panelcm"],
-                   "--materials", deps["materials"],
+    full_args_list = [AFORMS_CONSOLE_PATH,
+                   "--solver", NASTRAN_SOLVER_PATH,
+                   "--PythonPath", PYTHON_PATH,
+                   "--optimizer_path", OPTIMIZATION_SOLVER_PATH,
+                   "--panelcm", PANELCM,
+                   "--materials", MATERIALS_DB,
                    *optional_arguments_list
                     ]
     print(" ".join(full_args_list))

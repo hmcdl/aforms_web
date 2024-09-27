@@ -14,7 +14,7 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 
 from app.database import get_db
-from app.secret_data import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from app.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
 from . import models as db_models
 from .schemas import User, UserCreate
 
@@ -184,7 +184,7 @@ async def login_for_access_token( req : Request,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     if user.username == "tester":
         access_token = create_access_token(
         data={"sub": user.username}, expires_delta=timedelta(minutes=60*24*365*5)

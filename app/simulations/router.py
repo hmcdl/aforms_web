@@ -18,13 +18,12 @@ from fastapi.responses import FileResponse
 
 from sqlalchemy.orm import Session
 
-from app.globals import sim_dir
+from app.settings import SIMULATIONS_DIR
 from app.simulations import log_socket
 from . import models
 from . import schemas
-from ..users.users import oauth2_scheme, get_user_by_token
+from ..users.router import oauth2_scheme, get_user_by_token
 from ..database import get_db
-# from app.globals import simulation_executor
 from . import run_aformes
 
 router = APIRouter(prefix="/simulations", tags=["simulations"])
@@ -44,9 +43,9 @@ def add_simulation(token: Annotated[str, Depends(oauth2_scheme)],
     """
     db_user = get_user_by_token(token=token, db=db)
     relational_working_dir = db_user.username
-    abs_working_dir = path.join(sim_dir, relational_working_dir, title)
-    if not path.isdir(path.join(sim_dir, relational_working_dir)):
-        mkdir(path.join(sim_dir, relational_working_dir))
+    abs_working_dir = path.join(SIMULATIONS_DIR, relational_working_dir, title)
+    if not path.isdir(path.join(SIMULATIONS_DIR, relational_working_dir)):
+        mkdir(path.join(SIMULATIONS_DIR, relational_working_dir))
     if not path.isdir(abs_working_dir):
         mkdir(abs_working_dir)
     else:
@@ -94,7 +93,7 @@ def remove_sim(title: str, token: Annotated[str, Depends(oauth2_scheme)],
     """Удаление симуляции из БД"""
     db_user = get_user_by_token(token=token, db=db)
     relational_working_dir = db_user.username
-    abs_working_dir = path.join(sim_dir, relational_working_dir, title)
+    abs_working_dir = path.join(SIMULATIONS_DIR, relational_working_dir, title)
     if not path.isdir(abs_working_dir):
         raise HTTPException(status_code=200, detail=f"title {title} doesnt exists")
     try:
@@ -103,8 +102,8 @@ def remove_sim(title: str, token: Annotated[str, Depends(oauth2_scheme)],
     except Exception as e:
         raise e
     rmtree(abs_working_dir)
-    if len(listdir(path.join(sim_dir, relational_working_dir))) == 0:
-        rmtree(path.join(sim_dir, relational_working_dir))
+    if len(listdir(path.join(SIMULATIONS_DIR, relational_working_dir))) == 0:
+        rmtree(path.join(SIMULATIONS_DIR, relational_working_dir))
     return {"status_code": 200, "detail": f"title {title} successfully removed"}
 
 
@@ -132,7 +131,7 @@ def start_simulation(request : Request,
         raise HTTPException(status_code=200, detail=f"title {title} doesnt exists")
     relational_working_dir = db_user.username
     # название папки с симуляцией
-    abs_working_dir = path.join(sim_dir, relational_working_dir, title)
+    abs_working_dir = path.join(SIMULATIONS_DIR, relational_working_dir, title)
     # abs_working_dir = path.join(Path(__file__).absolute().parent, abs_working_dir) 
     # sp = subprocess.Popen(['python', simulation_executor, path.join(abs_working_dir, title)], cwd=abs_working_dir)
     conver_args = json.loads(conver_args.model_dump_json())
@@ -167,9 +166,9 @@ def download_sim(title: str, token : Annotated[str, Depends(oauth2_scheme)],
                                               models.Simulation.title==title).all()) == 0:
         raise HTTPException(status_code=200, detail=f"title {title} doesnt exists")
     relational_working_dir = db_user.username
-    abs_working_dir = path.join(sim_dir, relational_working_dir, title)
+    abs_working_dir = path.join(SIMULATIONS_DIR, relational_working_dir, title)
     archieve_filename = abs_working_dir
-    root_dir = path.join(sim_dir, relational_working_dir, title)
+    root_dir = path.join(SIMULATIONS_DIR, relational_working_dir, title)
     make_archive(base_name=archieve_filename, format='zip', root_dir=root_dir)
     return FileResponse(archieve_filename + ".zip", filename='results.zip', media_type='multipart/form-data')
 
