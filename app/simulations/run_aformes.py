@@ -56,6 +56,7 @@ def prepare_mdl(filename: str) -> None:
         control_system_path = os.path.join(pathlib.Path(filename).parent, "control_system.json\n")
         lines[index_loads] = loads_path
         lines[index_control_system] = control_system_path
+    
     with open(filename, 'w') as f:
         f.writelines(lines)
 
