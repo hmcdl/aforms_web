@@ -1,6 +1,8 @@
 """
 Модуль с методом запуска консольного AFORMS на сервере
 """
+import asyncio
+import logging
 import os
 import pathlib
 import subprocess
@@ -18,7 +20,7 @@ def run_mock(arg) -> int:
     sp.wait()
     return sp.returncode
 
-def run_aformes(args_map: dict, cwd: str) -> int:
+async def run_aformes(args_map: dict, cwd: str) -> int:
     """
     Метод для запуска консольного AFORMS. 
     Запускает, ждет завершения, возвращает код завершения 
@@ -27,7 +29,7 @@ def run_aformes(args_map: dict, cwd: str) -> int:
     for key in args_map:
         optional_arguments_list.append("--" + key)
         optional_arguments_list.append(str(args_map[key]))
-    full_args_list = [AFORMS_CONSOLE_PATH,
+    full_args_list = [AFORMS_CONSOLE_PATH, 
                    "--solver", NASTRAN_SOLVER_PATH,
                    "--PythonPath", PYTHON_PATH,
                    "--optimizer_path", OPTIMIZATION_SOLVER_PATH,
@@ -35,10 +37,13 @@ def run_aformes(args_map: dict, cwd: str) -> int:
                    "--materials", MATERIALS_DB,
                    *optional_arguments_list
                     ]
-    print(cwd)
-    sp = subprocess.Popen(full_args_list, cwd=cwd)
-    sp.wait()
-    return sp.returncode
+    # print(cwd)
+    print(full_args_list)
+    proc = await asyncio.create_subprocess_exec(*full_args_list, cwd=cwd)
+    await proc.wait()
+    # sp = subprocess.Popen(full_args_list, cwd=cwd)
+    # sp.wait()
+    return proc.returncode
 
 
 def prepare_mdl(filename: str) -> None:
@@ -56,6 +61,7 @@ def prepare_mdl(filename: str) -> None:
         control_system_path = os.path.join(pathlib.Path(filename).parent, "control_system.json\n")
         lines[index_loads] = loads_path
         lines[index_control_system] = control_system_path
+    
     with open(filename, 'w') as f:
         f.writelines(lines)
 

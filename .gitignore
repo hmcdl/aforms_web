@@ -5,3 +5,4 @@ app/drafts/__pycache__
 app/users/__pycache__/
 app/simulations/__pycache__/
 .env
+.vscode
