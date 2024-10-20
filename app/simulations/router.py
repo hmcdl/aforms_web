@@ -1,6 +1,7 @@
 """
 Реализация эндпойнтов, связанных с симуляциями
 """
+import asyncio
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.settings import SIMULATIONS_DIR
+from app.simulations import log_socket
 from . import models
 from . import schemas
 from ..users.router import oauth2_scheme, get_user_by_token
@@ -124,7 +126,7 @@ def show_my_sims(token: Annotated[str, Depends(oauth2_scheme)],
     return projects_slice
 
 @router.post("/start_simulation")
-def start_simulation(request : Request,
+async def start_simulation(request : Request,
                     title : str,
                     conver_args: schemas.conver_args,
                     token : Annotated[str, Depends(oauth2_scheme)],
@@ -158,12 +160,17 @@ def start_simulation(request : Request,
     # создаем лог-файл в директории проекта
     with open(log_file_path, 'w') as f:
         pass
-    log_socket_abs_path = os.path.abspath(os.path.join(Path(__file__).parent, "log_socket.py") )
-    # print(f"{log_socket_abs_path} {request.client.host} 60606 {log_file_path}")
+    
     # Запускаем сокет на оптправку логов
-    subprocess.Popen(f'python {log_socket_abs_path} {request.client.host} 60606 {log_file_path}')
+    transmit_log_task = asyncio.create_task(log_socket.transmit_log(request.client.host, 60606, log_file_path))
+    # log_socket_abs_path = os.path.abspath(os.path.join(Path(__file__).parent, "log_socket.py") )
+    # subprocess.Popen(f'python {log_socket_abs_path} {request.client.host} 60606 {log_file_path}')
+
     # Запускаем расчет проекта
-    returncode = run_aformes.run_aformes(args_map=conver_args, cwd=abs_working_dir)
+    task = asyncio.create_task(run_aformes.run_aformes(args_map=conver_args, cwd=abs_working_dir))
+    returncode = await task
+    await transmit_log_task
+    # returncode = await run_aformes.run_aformes(args_map=conver_args, cwd=abs_working_dir)
     if returncode == 0:
         db.query(models.Simulation).filter(models.Simulation.owner_id==db_user.id,
                                                 models.Simulation.title==title).first().status = "calculated"
@@ -191,3 +198,7 @@ def download_sim(title: str, token : Annotated[str, Depends(oauth2_scheme)],
     make_archive(base_name=archieve_filename, format='zip', root_dir=root_dir)
     
     return FileResponse(archieve_filename + ".zip", filename='results.zip', media_type='multipart/form-data')
+
+@router.get("/ip_echo")
+def ip_echo(request: Request):
+    return({"ip": request.client.host})
